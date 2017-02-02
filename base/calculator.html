@@ -1,21 +1,12 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>A simple calculator...</title>
-	</head>
-	<body>
+<form action="calculate.php" method="get">
+	<input type="text" name="arg1">
+	<select name="op">
+		<option value="+">+</option>
+		<option value="-">-</option>
+		<option value="*">*</option>
+		<option value="/">/</option>
+	</select>
+	<input type="text" name="arg2">
+	<input type="submit" value="submit"> 	
+</form>
 
-		<form action="calculate.php" method="get">
-			<input type="text" name="arg1">
-			<select name="op">
-				<option value="+">+</option>
-				<option value="-">-</option>
-				<option value="*">*</option>
-				<option value="/">/</option>
-			</select>
-			<input type="text" name="arg2">
-			<input type="submit" value="submit"> 	
-		</form>
-	</body>
-</html> 
