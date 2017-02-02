@@ -1,0 +1,9 @@
+<?php
+
+echo "<aside style=\"background-color:grey;color:white;padding:10px;float=right;\">\n";
+foreach($_SESSION["history"] as &$calc) {
+	echo "$calc[0] $calc[1] $calc[2] = $calc[3] <br />\n";
+}
+echo "</aside>\n";
+
+?>

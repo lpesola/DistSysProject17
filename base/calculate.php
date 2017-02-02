@@ -43,11 +43,7 @@ if (!isset($_SESSION['history'])) {
  
 array_push($_SESSION["history"], $calculation);
 
-echo "<aside style=\"background-color:grey;color:white;padding:10px;float=right;\">\n";
-foreach($_SESSION["history"] as &$calc) {
-	echo "$calc[0] $calc[1] $calc[2] = $calc[3] <br />\n";
-}
-echo "</aside>\n";
+include("history.html");
 
 include("calculator.html");
 ?>
