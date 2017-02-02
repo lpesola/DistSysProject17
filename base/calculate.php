@@ -13,6 +13,7 @@ $result = "NaN";
 switch ($op) {
 	case "+":
 		$result = $arg1 + $arg2;
+		break;
 	case "-":
 		$result = $arg1 - $arg2;       
        		break;
@@ -30,9 +31,10 @@ $calculation = array($arg1, $op, $arg2, $result);
 array_push($_SESSION["history"], $calculation);
 
 echo "<div style=\"background-color:grey;color:white;padding:20px;\">";
-foreach($_SESSION["history"] as &$calc) {
+/*foreach($_SESSION["history"] as &$calc) {
 	echo "$calc[0] $calc[1] $calc[2] = $calc[3] <br />";
-}
+}*/
+echo "$arg1 $op $arg2 = $result";
 echo "</div>";
 
 include("calculator.html");
