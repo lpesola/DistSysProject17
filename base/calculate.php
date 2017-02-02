@@ -7,8 +7,10 @@ $arg1 = filter_input(INPUT_GET, "arg1", FILTER_VALIDATE_INT);
 $arg2 = filter_input(INPUT_GET, "arg2", FILTER_VALIDATE_INT);
 $op = $_GET['op'];
 
-
-$result = "NaN";
+if($arg1 == NULL || $arg1 == False)
+	exit("invalid or no argument1");
+if($arg2 == NULL || $arg2 == False)
+	exit("invalid or no argument1");
 
 switch ($op) {
 	case "+":
