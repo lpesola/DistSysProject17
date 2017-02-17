@@ -15,8 +15,8 @@ $arg2 = filter_input(INPUT_GET, "arg2", FILTER_VALIDATE_INT);
 
 if ($op == "sin") {
 	$plotdata = fopen("plot.data", "w");
-	for ($i = -1.14; $i<1.14; $i+=0.1) {
-		$sine = sin($i);
+	for ($i = -3.1412; $i<3.1412; $i+=0.1) {
+		$sine = $arg1*sin($i);
 		$line = "$i\t$sine\n";
 		fwrite($plotdata, $line);
 	}

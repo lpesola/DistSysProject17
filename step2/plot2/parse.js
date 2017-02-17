@@ -29,26 +29,60 @@ function get_results(ops, values) {
 	
 }
 
+function sine(x) {
+// write a function that approximates sine later, if there is time
+	return Math.sin(x);  
+}
+
 function plot_sin(expr) {
 	if (expr.includes("*")) {
 		var parsed = expr.split("*");
 		var multiplier = parsed[0];
-		var x = parsed[1].match(/\d+/); 
 	} else {
 		var multiplier = 0;
-		var x = expr.match(/\d+/);
 	}
-	var c=document.getElementById("plot");
-	var ctx=c.getContext("2d");	
-	ctx.beginPath();
-	ctx.moveTo(0,0);
-	// canvas is 400x400 px -> origo is 200,200
-	for (var i = -31.4; i < 31.4; i++) {
-		ctx.lineTo(i+200,Math.sin(i)+200);
+	
+	var c = document.getElementById("plot");
+	var w = c.width;
+	var h = c.height;
+	var ctx = c.getContext("2d");	
+	draw_axes(ctx);
+	ctx.translate(w/2, h/2);
+	draw_point(ctx, 0, 0);
+	ctx.scale(6, 6);
+	// multiply by 10 to make large enough for canvas
+	for (var i = -3.14; i < 3.14; i+=0.1) {
+		draw_point(ctx, i*10, sine(i)*10);
 	}
-	ctx.stroke();	
+
 }
 
+function draw_point(canvas, x, y) {
+	canvas.fillRect(x, y, 0.5, 0.5);
+
+}
+
+function draw_axes(ctx) {
+	var canvas = document.getElementById("plot"); 
+	var w = canvas.width;
+	var h = canvas.height;
+	// draw y axis
+	ctx.beginPath();
+	ctx.moveTo(w/2, 0);
+	ctx.lineTo(w/2, h);
+	ctx.strokeStyle="LightSlateGray"
+	ctx.stroke();
+	// maybe add scales with 
+// ctx.font = "8px Arial";
+//ctx.fillText("0",10,50);
+//
+
+	// draw x axis
+	ctx.beginPath();
+	ctx.moveTo(0, h/2);
+	ctx.lineTo(w, h/2);
+	ctx.stroke();
+}
 
 function sanitize(expr) {
 	// also check for other illegal characters

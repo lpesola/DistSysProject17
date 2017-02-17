@@ -33,14 +33,10 @@ function plot_sin(expr) {
 	if (expr.includes("*")) {
 		var parsed = expr.split("*");
 		var multiplier = parsed[0];
-		var x = parsed[1].match(/\d+/); 
 	} else {
-		var multiplier = 0;
-		var x = expr.match(/\d+/);
+		var multiplier = 1;
 	}
-	console.log("multiplier: "+multiplier);
-	console.log("x: "+x);
-	$.get("calculate.php", {arg1: multiplier, op: "sin", arg2: x}, function( data ) {
+	$.get("calculate.php", {arg1: multiplier, op: "sin"}, function( data ) {
 		if ($("img").length) {
 			$("img").replaceWith(data);
 			console.log("replace old img");

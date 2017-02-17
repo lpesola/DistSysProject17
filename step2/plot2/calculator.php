@@ -32,7 +32,7 @@
 
 ?>
 
-<canvas id="plot" width="400" height="400"></canvas>
+<canvas id="plot" width="400" height="400" style="background-color:white;"></canvas>
 
 	</div>
 
