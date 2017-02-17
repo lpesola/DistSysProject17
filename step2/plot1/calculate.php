@@ -1,8 +1,9 @@
 <?php 
 
-/* PHP session is used to store history: in step 1 cache is server-side.
+/* PHP session is used to store history: in step 2 the cache is still server-side.
  * This script is called on submit.
  * Only print the result. 
+ * Use gnuplot to plot sine.
  */
 
 if(session_id() =='') {
@@ -16,8 +17,8 @@ $arg2 = filter_input(INPUT_GET, "arg2", FILTER_VALIDATE_INT);
 if ($op == "sin") {
 	$plotdata = fopen("plot.data", "w");
 	for ($i = -3.1412; $i<3.1412; $i+=0.1) {
-		$sine = $arg1 * sin($i);
-		$line = "$i\t$sine\n";
+		$sinx = $arg1 * approx_sine($i);
+		$line = "$i\t$sinx\n";
 		fwrite($plotdata, $line);
 	}
 	fclose($plotdata);	
@@ -59,5 +60,37 @@ if ($op == "sin") {
 	echo $result;
 
  }
+
+function approx_sine($x) {
+// x - x^3/3! + x^5/5! - x^7/7!
+	$sine = $x - (power($x, 3)/factorial(3));
+	$sine = $sine + (power($x, 5)/factorial(5));
+	$sine = $sine - (power($x, 7)/factorial(7));
+
+	return $sine;
+}
+
+function power($x, $p) {
+	$res = $x;
+		error_log("$x to the power of $p:\n", 3, "/home/userlogs/lpesola.error");
+	for ($i = 1; $i < $p; $i++) {
+		$res = $res*$x;
+		error_log("$res\n", 3, "/home/userlogs/lpesola.error");
+	}
+
+	error_log("$x to the power of $p = $res\n", 3, "/home/userlogs/lpesola.error");
+	return $res;
+}
+
+function factorial($x) {
+	$res = $x;
+	for ($i = 1; $i < $x; $i++) {
+		$res = $i * $res;
+	}
+
+	error_log("factorial of $x is $res\n", 3, "/home/userlogs/lpesola.error");
+	return $res;
+}
+
 ?>
 
