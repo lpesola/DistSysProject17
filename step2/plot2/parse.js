@@ -39,20 +39,20 @@ function plot_sin(expr) {
 		var parsed = expr.split("*");
 		var multiplier = parsed[0];
 	} else {
-		var multiplier = 0;
+		var multiplier = 1;
 	}
 	
 	var c = document.getElementById("plot");
 	var w = c.width;
 	var h = c.height;
 	var ctx = c.getContext("2d");	
-	draw_axes(ctx);
+	draw_axes(ctx, multiplier);
 	ctx.translate(w/2, h/2);
 	draw_point(ctx, 0, 0);
 	ctx.scale(6, 6);
 	// multiply by 10 to make large enough for canvas
 	for (var i = -3.14; i < 3.14; i+=0.1) {
-		draw_point(ctx, i*10, sine(i)*10);
+		draw_point(ctx, i*10, multiplier*sine(i)*10);
 	}
 
 }
@@ -62,7 +62,7 @@ function draw_point(canvas, x, y) {
 
 }
 
-function draw_axes(ctx) {
+function draw_axes(ctx, maxh) {
 	var canvas = document.getElementById("plot"); 
 	var w = canvas.width;
 	var h = canvas.height;
@@ -72,16 +72,25 @@ function draw_axes(ctx) {
 	ctx.lineTo(w/2, h);
 	ctx.strokeStyle="LightSlateGray"
 	ctx.stroke();
-	// maybe add scales with 
-// ctx.font = "8px Arial";
-//ctx.fillText("0",10,50);
-//
-
 	// draw x axis
 	ctx.beginPath();
 	ctx.moveTo(0, h/2);
 	ctx.lineTo(w, h/2);
 	ctx.stroke();
+	// maybe add scales or lines
+	ctx.font = "12px Arial";
+	var step = (maxh / 5) * 2;
+	ctx.fillText("- 1", 200, 5);
+	ctx.fillText("- 0", 200, 200);
+	ctx.fillText("- -0.5", 200, 300);
+	ctx.fillText("- -1", 200, 400);
+	for (var i = h; i < 0; i+=10) {
+		var s = "- "+i;
+		ctx.fillText(s, 200, i);
+
+	}
+
+
 }
 
 function sanitize(expr) {
