@@ -19,9 +19,18 @@
 	<body>
 
 
-	<div id="calculator" style="float:left;">
+	<div id="calculator" style="float:top;">
 		<input type="text" id="expr">
 		<button id="calc"> Click! </button>
+	</div>
+	<div id="result" style="float:bottom;background-color:grey;color:white;padding:10px">
+<?php
+	session_start();
+	$calc = end($_SESSION["history"]);
+	echo "$calc[0] $calc[1] $calc[2] = $calc[3] <br />\n";
+
+
+?>
 	</div>
 
 	</body>

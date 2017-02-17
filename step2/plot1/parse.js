@@ -9,6 +9,7 @@ function parseExpression(expr) {
 		var values= expr.split(/[*+-/]/);
 		get_results(ops, values);	
 	}
+	
 }
 
 function get_results(ops, values) {
@@ -22,10 +23,9 @@ function get_results(ops, values) {
 		if(ops.length != 0) {
 			get_results(ops, values);
 		} else {
-			location.reload();
+			location.reload();	
 		}
-	}
-	);
+	});
 	
 }
 
@@ -41,12 +41,14 @@ function plot_sin(expr) {
 	console.log("multiplier: "+multiplier);
 	console.log("x: "+x);
 	$.get("calculate.php", {arg1: multiplier, op: "sin", arg2: x}, function( data ) {
-		console.log("create p");
-		$("#calculator").after(data);
-		console.log("append img");
+		if ($("img").length) {
+			$("img").replaceWith(data);
+			console.log("replace old img");
+		} else {
+			$("#result").append(data);
+			console.log("append img");	
 		}
-	);
-
+	});
 }
 
 function sanitize(expr) {

@@ -19,7 +19,7 @@
 	<body>
 
 
-	<aside style="background-color:grey;color:white;padding:10px;float=right;width:50%;">
+	<aside style="background-color:grey;color:white;padding:10px;float:right;width:50%;">
 <?php
 	session_start();
 	foreach($_SESSION["history"] as &$calc) {
