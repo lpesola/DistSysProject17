@@ -32,9 +32,9 @@ function get_results(ops, values) {
 function plot_sin(expr) {
 	if (expr.includes("*")) {
 		var parsed = expr.split("*");
-		var multiplier = parsed[0];
+		multiplier = parsed[0];
 	} else {
-		var multiplier = 1;
+		multiplier = 1;
 	}
 	
 	var c = document.getElementById("plot");
@@ -44,7 +44,7 @@ function plot_sin(expr) {
 	draw_axes(ctx, multiplier);
 	ctx.translate(w/2, h/2);
 	ctx.scale(6, 6);
-//	power(2, 2, 3, 3);
+	power(2, 2, 3, 3);
 	for (var i = -3.14; i < 3.14; i+=0.1) {
 		power(i, i, 3, 3);
 	}
@@ -62,10 +62,11 @@ function sine(x) {
 }
 
 function draw_point(x, y) {
-	
+// coordinates should be increased so that they fit in the plot in a way that makes sense
+// now with no multipliers the graph is very small	
 	var c = document.getElementById("plot");
 	var ctx = c.getContext("2d");
-	var sine = x - y;	
+	var sine = multiplier * (x - y);	
 	ctx.fillRect(x, sine, 0.5, 0.5);
 
 }
@@ -127,15 +128,33 @@ function factorial(x, n, pow, xo, po, pt) {
 					throw new Error("p=5, division had incorrect arguments");
 				}
 					console.log("round: "+po+"-> "+pow+" divided by "+x+" equals "+data);
-					//add, then draw
+					//add, then call power with 7 to get the last term
 					$.get("calculate.php", {arg1: pt, op:"+", arg2: data}, function( data ) {
 							if (jQuery.isNumeric(data) == false) {
 								console.log("err");
 								throw new Error("p=5, add had incorrect arguments");
 							} 
+					console.log("round: "+po+"-> "+pow+" divided by "+x+" equals "+data);
+					power(xo, xo, 7, 7, data); });
+			});
+		} else if (n == 1 && po == 7) {
+			// divide pow with the result
+			// draw the point
+			// substract "data" from previous term
+			$.get("calculate.php", {arg1: pow, op:"/", arg2: data}, function( data ) {
+				if (jQuery.isNumeric(data) == false) { 
+					throw new Error("p=7, division had incorrect arguments");
+				}
+					console.log("round: "+po+"-> "+pow+" divided by "+x+" equals "+data);
+					//substract, then draw point
+					$.get("calculate.php", {arg1: pt, op:"+", arg2: data}, function( data ) {
+						if (jQuery.isNumeric(data) == false) {
+							console.log("err");
+							throw new Error("p=5, add had incorrect arguments");
+						} 
 						console.log("point can be drawn now");
 						draw_point(xo, data) }); 
-			});
+					});	
 		} else {
 			factorial(data, n, pow, xo, po, pt);
 		}
