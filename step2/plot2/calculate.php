@@ -10,8 +10,8 @@ if(session_id() =='') {
 }
 
 $op = $_GET['op'];
-$arg1 = filter_input(INPUT_GET, "arg1", FILTER_VALIDATE_INT); 
-$arg2 = filter_input(INPUT_GET, "arg2", FILTER_VALIDATE_INT);
+$arg1 = filter_input(INPUT_GET, "arg1", FILTER_VALIDATE_FLOAT); 
+$arg2 = filter_input(INPUT_GET, "arg2", FILTER_VALIDATE_FLOAT);
 
 if ($op == "sin") {
 	$plotdata = fopen("plot.data", "w");

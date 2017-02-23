@@ -9,8 +9,8 @@
 
 session_start();
 
-$arg1 = filter_input(INPUT_GET, "arg1", FILTER_VALIDATE_INT);
-$arg2 = filter_input(INPUT_GET, "arg2", FILTER_VALIDATE_INT);
+$arg1 = filter_input(INPUT_GET, "arg1", FILTER_VALIDATE_FLOAT);
+$arg2 = filter_input(INPUT_GET, "arg2", FILTER_VALIDATE_FLOAT);
 $op = $_GET['op'];
 
 if($arg1 == NULL || $arg1 == False)
