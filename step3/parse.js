@@ -1,3 +1,48 @@
+cache = [];
+cache_index = 0;
+cache_max = 200;
+
+function is_cached(expr) {
+// expr = [op, arg1, arg2]
+// cache[i] == [op, arg1, arg2, result] or
+// cache[i] == [sin, x, result]
+	for (var i = 0; i < cache.length; i++) {
+		if (cache[i][0] == expr[0] && cache[i][1] == expr[1]) {
+			if (expr[0] == "sin") {
+				return(cache[i][2]);
+			} else if (cache[i][2] == expr[2]) {
+				return(cache[i][3]);
+			}	
+		}
+	}
+	return null;
+}
+
+
+function save_result(expr) {
+	cache[cache_index] = expr;
+	cache_index += 1;
+	if (cache_index == cache_max-1) {
+		cache_index = 0;
+	} 	
+}
+
+
+
+/*
+Caching is done very naively. 
+Cache size is read from a field on the page. 
+Default is 200. Can be changed.
+Cache may have duplicates. 
+Cache is an array where entries are operations so that
+0: [op, arg1, arg2, result]
+1: [op, arg1, arg2, result]
+2: [sin, x, result]
+
+New values are written on top of the old values beginning from 0. 
+Checking if an operation is in the cache is more than O(n).
+*/
+
 /* does not parse correctly: decimal values, negatives values */
 function parseExpression(expr) {
 	var has_sin = expr.includes("sin");
@@ -16,15 +61,29 @@ function get_results(ops, values) {
 	var a1 = values.shift();
 	var o = ops.shift();
 	var a2 = values[0];
+
+	//everything done	
+	if(ops.length == 0) {
+		// the results should be shown in another way
+		location.reload();
+		return;	
+	}
+
+	var result = is_cached([o, a1, a2]);
+	if (result != null) {
+		console.log("there was a corresponding entry in the cache");
+		// save result in values
+		// call this function again
+		values[0] = result;
+		get_results(ops, values);
+	}
+	
+	
 	$.get("calculate.php", {arg1: a1, op: o, arg2: a2}, function( data ) {
-		values[0] = data;
+		values[0] = jQuery.trim(data);
+		save_result([o, a1, a2, data]);
 		console.log("result: "+data);
-		console.log("next up: "+values[0]+ops[0]+values[1]);
-		if(ops.length != 0) {
-			get_results(ops, values);
-		} else {
-			location.reload();	
-		}
+		get_results(ops, values);
 	});
 	
 }
