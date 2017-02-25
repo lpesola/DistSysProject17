@@ -10,7 +10,7 @@
 				init_canvas();
 		
 				$("#calc").click(function() {
-					parse_expression(sanitize($("#expr").val()));	
+					submit();	
 				});
 
 				$("#simplify").click(function() {

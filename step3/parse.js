@@ -28,38 +28,10 @@ simplification
 */
 
 function simplify_expression() {
-// parse
-	var expr = $("#expr").val();	
-	if (expr.includes("sin")) {
-		// nothing to simplify 
-	} else {
-		var input = expr.split('');
-		var value = [];
-		var values = [];
-		var ops = [];
-		for (var i = 0; i < input.length; i++) {
-			var c = input[i];
-			if (c == "." || jQuery.isNumeric(c)) {
-				value[value.length] = c;
-			} else if (c == "*" || c == "+" || c == "/") {
-				ops[ops.length] = c;
-				values[values.length] = value.join('');
-				value = [];
-			} else if (c == "-" && jQuery.isNumeric(input[i-1])) {
-				ops[ops.length] = c;
-				values[values.length] = value.join('');
-				value = [];
-			} else if (c == "-") {
-				value[value.length] = c;
-			} else {
-				throw new Error("can't parse this");
-			}
-		}
-		// add the last value
-		values[values.length] = value.join('');
-	}
+	var parsed = parse_expression();
+	var ops = parsed[0];
+	var values = parsed[1];
 
-// simplify
 // keep track if there were any simplifications: if not, inform the caller
 //  -> no need to call this function again unless changes are made
 	var simplified = false; 
@@ -79,50 +51,73 @@ function simplify_expression() {
 		expr = values[0];
 	} else {
 		for (var i = 0; i < ops.length; i++) {
-			expr = expr+values[i]+ops[i]+values[i+1]; 
+			expr += values[i]+ops[i];
 		}
+		expr += values[values.length-1];
 	}
 	$("#expr").val(expr);
+
+// return true if this is simplified
+	return !simplified;
+}
+
+/* this is used to either plot the sine function or 
+ * to calculate the value of the current expression
+ */
+ 
+function submit() {
+	var expr = $("#expr").val();	
+	if (expr.includes("sin")) {
+		plot_sin(expr);
+	} else {
+		do {
+			var ready = simplify_expression();
+		} while (ready == false); 
+
+		parsed = parse_expression();
+		ops = parsed[0];
+		values = parsed[1];
+		get_results(ops, values);	
+	}
 }
 
 
 /*
+parse whatever expression is currently there
+return a tuple where the first entry is an array with all the operators
+and the second is an array with all the operands
 naive parser:
 will not work if user inputs too many decimal dots
 uses valid but superfluous + or - characters
 or in other ways inputs ivalid expressions such as ** or // 
 */
-function parse_expression(expr) {
-	var has_sin = expr.includes("sin");
-	if (has_sin) {
-		plot_sin(expr);
-	} else {
-		var input = expr.split('');
-		var value = [];
-		var values = [];
-		var ops = [];
-		for (var i = 0; i < input.length; i++) {
-			var c = input[i];
-			if (c == "." || jQuery.isNumeric(c)) {
-				value[value.length] = c;
-			} else if (c == "*" || c == "+" || c == "/") {
-				ops[ops.length] = c;
-				values[values.length] = value.join('');
-				value = [];
-			} else if (c == "-" && jQuery.isNumeric(input[i-1])) {
-				ops[ops.length] = c;
-				values[values.length] = value.join('');
-				value = [];
-			} else if (c == "-") {
-				value[value.length] = c;
-			} else {
-				throw new Error("can't parse this");
-			}
+function parse_expression() {
+	var expr = $("#expr").val();	
+	var input = expr.split('');
+	var value = [];
+	var values = [];
+	var ops = [];
+	for (var i = 0; i < input.length; i++) {
+		var c = input[i];
+		if (c == "." || jQuery.isNumeric(c)) {
+			value[value.length] = c;
+		} else if (c == "*" || c == "+" || c == "/") {
+			ops[ops.length] = c;
+			values[values.length] = value.join('');
+			value = [];
+		} else if (c == "-" && jQuery.isNumeric(input[i-1])) {
+			ops[ops.length] = c;
+			values[values.length] = value.join('');
+			value = [];
+		} else if (c == "-") {
+			value[value.length] = c;
+		} else {
+			throw new Error("can't parse this");
 		}
-		// add the last value
-		values[values.length] = value.join('');
-		get_results(ops, values);	
 	}
+	// add the last value
+	values[values.length] = value.join('');
+	return([ops, values]);	
 	
 }
 
