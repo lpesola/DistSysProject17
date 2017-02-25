@@ -30,22 +30,31 @@ naive parser:
 will not work if user inputs too many decimal dots
 uses valid but superfluous + or - characters
 or in other ways inputs ivalid expressions such as ** or // 
-
-make expr an array with split('')
-read one char at a time 
-- if char is number or ., put to tempchar array
-- if char is * / + , put tempchar to values (use join to make it a string) and clear it: add char to ops
-- if char is -, check next and prev char
--- if prev is null or an operand and next is number, this - is part of a number 
--- otherwise invalid expression or actual operand -> assume latter
--- or conversely: if both prev and next are numbers, this is an operand
--- otherwise not
-
 */
-
-		var ops = expr.split(/\d+/);
-		ops = ops.slice(1,ops.length);
-		var values= expr.split(/[*+-/]/);
+		var input = expr.split('');
+		var value = [];
+		var values = [];
+		var ops = [];
+		for (var i = 0; i < input.length; i++) {
+			var c = input[i];
+			if (c == "." || jQuery.isNumeric(c)) {
+				value[value.length] = c;
+			} else if (c == "*" || c == "+" || c == "/") {
+				ops[ops.length] = c;
+				values[values.length] = value.join('');
+				value = [];
+			} else if (c == "-" && jQuery.isNumeric(input[i-1])) {
+				ops[ops.length] = c;
+				values[values.length] = value.join('');
+				value = [];
+			} else if (c == "-") {
+				value[value.length] = c;
+			} else {
+				throw new Error("can't parse this");
+			}
+		}
+		// add the last number
+		values[values.length] = value.join('');
 		get_results(ops, values);	
 	}
 	
@@ -53,21 +62,19 @@ read one char at a time
 
 /* handle operations other than plotting sin */
 function get_results(ops, values) {
+	//everything done	
+	if(ops.length == 0) {
+		// the results should be shown in another way
+		$("p").prepend("Result: "+values[0]+" ");
+		return "ready";	
+	}
+ 
 	var a1 = jQuery.trim(values.shift());
 	var o = jQuery.trim(ops.shift());
 	var a2 = values[0];
 
-	//everything done	
-	if(ops.length == 0) {
-		// the results should be shown in another way
-		$("p").prepend("Result: "+a1+" ");
-		return "ready";	
-	} 
-
 	var result = cache[a1+o+a2];
 	if (result != null) {
-		console.log("there was a corresponding entry in the cache");
-		// call this function again
 		values[0] = result;
 		get_results(ops, values);
 	} else {	
