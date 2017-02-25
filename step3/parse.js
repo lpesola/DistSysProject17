@@ -14,23 +14,25 @@ New values are written on top of the old values beginning from 0.
 Checking if an operation is in the cache is more than O(n).
 */
 
-cache = new Object();
-cache_index = [];
-cache_max = 200;
+cache = new Map();
+cache_max = 60;
 
-
-/* does not parse correctly: decimal values, negatives values */
-function parseExpression(expr) {
-	var has_sin = expr.includes("sin");
-	if (has_sin) {
-		plot_sin(expr);
-	} else {
 /*
-naive parser:
-will not work if user inputs too many decimal dots
-uses valid but superfluous + or - characters
-or in other ways inputs ivalid expressions such as ** or // 
+need one function for actual simplification
+should work for all cases:
+call from button
+call from parse expression
+call from another function after getting results
+second one to handle call from button and to print the simplified value /inform of last possible 
+simplification
 */
+
+function simplify_expression() {
+// parse
+	var expr = $("#expr").val();	
+	if (expr.includes("sin")) {
+		// nothing to simplify 
+	} else {
 		var input = expr.split('');
 		var value = [];
 		var values = [];
@@ -53,11 +55,115 @@ or in other ways inputs ivalid expressions such as ** or //
 				throw new Error("can't parse this");
 			}
 		}
-		// add the last number
+		// add the last value
+		values[values.length] = value.join('');
+	}
+
+// simplify
+// keep track if there were any simplifications: if not, inform the caller
+//  -> no need to call this function again unless changes are made
+	var simplified = false; 
+	for (var i = 0; i < ops.length ; i++) {
+		if (cache.has(values[i]+ops[i]+values[i+1])) {
+			var result = cache.get(values[i]+ops[i]+values[i+1]);
+			ops.splice(i, 1);	
+			values.splice(i, 2, result);
+			simplified = true;
+		}	
+	}
+	
+// join & print to field
+	var expr = "";
+	// nothing to simplify: last result was in cache
+	if (ops.length == 0) {
+		expr = values[0];
+	} else {
+		for (var i = 0; i < ops.length; i++) {
+			expr = expr+values[i]+ops[i]+values[i+1]; 
+		}
+	}
+	$("#expr").val(expr);
+}
+
+
+/*
+naive parser:
+will not work if user inputs too many decimal dots
+uses valid but superfluous + or - characters
+or in other ways inputs ivalid expressions such as ** or // 
+*/
+function parse_expression(expr) {
+	var has_sin = expr.includes("sin");
+	if (has_sin) {
+		plot_sin(expr);
+	} else {
+		var input = expr.split('');
+		var value = [];
+		var values = [];
+		var ops = [];
+		for (var i = 0; i < input.length; i++) {
+			var c = input[i];
+			if (c == "." || jQuery.isNumeric(c)) {
+				value[value.length] = c;
+			} else if (c == "*" || c == "+" || c == "/") {
+				ops[ops.length] = c;
+				values[values.length] = value.join('');
+				value = [];
+			} else if (c == "-" && jQuery.isNumeric(input[i-1])) {
+				ops[ops.length] = c;
+				values[values.length] = value.join('');
+				value = [];
+			} else if (c == "-") {
+				value[value.length] = c;
+			} else {
+				throw new Error("can't parse this");
+			}
+		}
+		// add the last value
 		values[values.length] = value.join('');
 		get_results(ops, values);	
 	}
 	
+}
+
+/* Add to cache. If cache is full, remove oldest entry to make room for this one. 
+ * Map iterates elements in insertion order: oldest entry can be removed by iterating 
+ * over the map, removing the first entry and then stopping the iteration.
+ * I'm expecting the implementation's iterator to be at least somewhat smart (so sublinear).
+ */
+function save_result(expr, result) {
+	if (cache_max == 0) {
+		return;
+	}
+	if (cache.size == cache_max) {
+		for (var key of cache.keys()) {
+			cache.delete(key);
+			break;
+		}	
+	}
+	cache.set(expr,result);
+} 
+
+// clearing cache effectively disables caching: no records will be found with cache.has()
+// save_result won't do anything if cache_max is 0
+function change_cache(value) {
+	if (jQuery.isNumeric(value) == false) {
+		throw new Error("incorrect cache value");
+	}
+	if (value == 0) {
+		cache.clear();
+	} else if (cache_max > value) {
+		// remove cache_max - value entries
+		var items = cache_max - value;
+		for (var key of cache.keys()) {
+			if (items == 0) {
+				break;
+			}
+			cache.delete(key);
+			items--;
+		}
+	}
+	cache_max = value;
 }
 
 /* handle operations other than plotting sin */
@@ -72,15 +178,13 @@ function get_results(ops, values) {
 	var a1 = jQuery.trim(values.shift());
 	var o = jQuery.trim(ops.shift());
 	var a2 = values[0];
-
-	var result = cache[a1+o+a2];
-	if (result != null) {
-		values[0] = result;
+	if (cache.has(a1+o+a2)) {
+		values[0] = cache.get(a1+o+a2);
 		get_results(ops, values);
 	} else {	
 		$.get("calculate.php", {arg1: a1, op: o, arg2: a2}, function( data ) {
 			values[0] = jQuery.trim(data);
-			cache[a1+o+a2] = values[0];
+			save_result(a1+o+a2, values[0]);
 			console.log("result: "+data);
 			get_results(ops, values);
 		});
@@ -97,9 +201,8 @@ function plot_sin(expr) {
 	}
 	clear_canvas();	
 	for (var i = -3.14; i < 3.14; i+=0.1) {
-		var cached = cache["sin"+i];
-		if(cached != null) {
-			draw_point(i, cached);
+		if(cache.has("sin"+i)) {
+			draw_point(i, cache.get("sin"+i));
 		} else {
 			power(i, i, 3, 3);
 		}
@@ -114,12 +217,11 @@ function plot_sin(expr) {
 // prevt is the value of the previous term in the series, is undefined the first time this is called
 function power(data, x, p, po, prevt) {
 
-	var cached = cache["*"+a1+x];
-	if (cached != null) {
+	if (cache.has("*"+a1+x)) {
 		if (p == 2) {
-			factorial(po, po, cached, x, po, prevt);
+			factorial(po, po, cache.get["*"+a1+x], x, po, prevt);
 		} else {
-			power(cached, x, p-1, po, prevt);
+			power(cache.get["*"+a1+x], x, p-1, po, prevt);
 		}
 	} else {
 		var a1 = data;
@@ -196,7 +298,7 @@ function factorial(x, n, pow, xo, po, pt) {
 						if (jQuery.isNumeric(data) == false) {
 							throw new Error("p=5, add had incorrect arguments");
 						}
-						cache["sin"+xo] = data;
+						save_result("sin"+xo, jQuery.trim(data));
 						draw_point(xo, data) }); 
 					});	
 		} else {
