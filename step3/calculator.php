@@ -7,7 +7,7 @@
 		<script src="parse.js"></script>
 		<script>
 			$(document).ready(function() {
-		
+				init_canvas();	
 				$("#calc").click(function(){
 					parseExpression(sanitize($("#expr").val()));	
 				});
@@ -29,16 +29,8 @@
 	</div>
 
 	<div id="result" style="float:bottom;background-color:grey;color:white;padding:10px">
-<?php
-	session_start();
-	$calc = end($_SESSION["history"]);
-	echo "$calc[0] $calc[1] $calc[2] = $calc[3] <br />\n";
-
-
-?>
-
-<canvas id="plot" width="400" height="400" style="background-color:white;"></canvas>
-
+		<p></p>
+		<canvas id="plot" width="400" height="400" style="background-color:white;"></canvas>
 	</div>
 
 	</body>
