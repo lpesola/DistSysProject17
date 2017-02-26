@@ -126,9 +126,9 @@ function change_cache(value) {
 	}
 	if (value == 0) {
 		cache.clear();
-	} else if (cache_max > value) {
+	} else if (cache.size > value) {
 		// remove cache_max - value entries
-		var items = cache_max - value;
+		var items = cache.size - value;
 		for (var key of cache.keys()) {
 			if (items == 0) {
 				break;
