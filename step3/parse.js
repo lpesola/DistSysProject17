@@ -1,31 +1,10 @@
-
 /*
-
-Caching is done very naively. 
-Cache size is read from a field on the page. 
-Default is 200. Can be changed.
-Cache is an object such that 
- cache["arg1oparg2"] = result;
-
-//cache["1+2"] = 3;
-//cache["sinXXX"] = 1;
-
-New values are written on top of the old values beginning from 0. 
-Checking if an operation is in the cache is more than O(n).
+Caching is done very naively: see the documentation for more info.
 */
 
 cache = new Map();
 cache_max = 60;
 
-/*
-need one function for actual simplification
-should work for all cases:
-call from button
-call from parse expression
-call from another function after getting results
-second one to handle call from button and to print the simplified value /inform of last possible 
-simplification
-*/
 
 function simplify_expression() {
 	var parsed = parse_expression();
@@ -213,14 +192,7 @@ function plot_sin(expr) {
 // po is p's original value so when calling this function it should be equal to p
 // prevt is the value of the previous term in the series, is undefined the first time this is called
 function power(data, x, p, po, prevt) {
-
-	if (cache.has("*"+a1+x)) {
-		if (p == 2) {
-			factorial(po, po, cache.get["*"+a1+x], x, po, prevt);
-		} else {
-			power(cache.get["*"+a1+x], x, p-1, po, prevt);
-		}
-	} else {
+	
 		var a1 = data;
 		$.get("calculate.php", {arg1: a1, op: "*", arg2: x}, function( data ) {
 			if (jQuery.isNumeric(data) == false) {
@@ -230,14 +202,14 @@ function power(data, x, p, po, prevt) {
 				// we then want to calculate the factorial of p's original value
 				// pow is needed in factorial() to divide pow with the factorial
 				// x is needed in factorial() to draw the point to the canvas
-				// the last argument is left out, because here we don't yet know the previous term: though it should be plain x
+				// the last argument is left out if the previous term is not known
 				save_result(x+"pow"+po, jQuery.trim(data));
 				factorial(po, po, data, x, po, prevt);
 			} else {
 				power(data, x, p-1, po, prevt);
 			}
 		}); 
-	} 
+	
 }
 
 // factorial of x; n should be equal to x when this function is called
