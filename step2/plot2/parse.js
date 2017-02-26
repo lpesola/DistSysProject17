@@ -29,19 +29,13 @@ function get_results(ops, values) {
 	
 }
 
-function sine(x) {
-// write a function that approximates sine later, if there is time
-	return Math.sin(x);  
-}
-
 function plot_sin(expr) {
 	if (expr.includes("*")) {
 		var parsed = expr.split("*");
 		var multiplier = parsed[0];
 	} else {
 		var multiplier = 1;
-	}
-	
+	}	
 	var c = document.getElementById("plot");
 	var w = c.width;
 	var h = c.height;
@@ -52,7 +46,7 @@ function plot_sin(expr) {
 	ctx.scale(6, 6);
 	// multiply by 10 to make large enough for canvas
 	for (var i = -3.14; i < 3.14; i+=0.1) {
-		draw_point(ctx, i*10, multiplier*sine(i)*10);
+		draw_point(ctx, i*10, multiplier*(Math.sin(i))*10);
 	}
 
 }
