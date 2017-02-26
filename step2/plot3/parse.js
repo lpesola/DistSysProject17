@@ -170,15 +170,6 @@ function draw_axes(ctx, maxh) {
 	ctx.lineTo(w, h/2);
 	ctx.stroke();
 	// maybe add scales or lines
-	ctx.font = "12px Arial";
-	var step = (maxh / 5) * 2;
-	ctx.fillText("- 1", 200, 5);
-	ctx.fillText("- 0", 200, 200);
-	ctx.fillText("- -0.5", 200, 300);
-	ctx.fillText("- -1", 200, 400);
-	for (var i = h; i < 0; i+=10) {
-		var s = "- "+i;
-		ctx.fillText(s, 200, i);
 
 	}
 

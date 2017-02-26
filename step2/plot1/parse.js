@@ -30,13 +30,7 @@ function get_results(ops, values) {
 }
 
 function plot_sin(expr) {
-	if (expr.includes("*")) {
-		var parsed = expr.split("*");
-		var multiplier = parsed[0];
-	} else {
-		var multiplier = 1;
-	}
-	$.get("calculate.php", {arg1: multiplier, op: "sin"}, function( data ) {
+	$.get("calculate.php", {op: expr}, function( data ) {
 		if ($("img").length) {
 			$("img").replaceWith(data);
 			console.log("replace old img");

@@ -181,7 +181,9 @@ function get_results(ops, values) {
 			values[0] = jQuery.trim(data);
 			save_result(a1+o+a2, values[0]);
 			console.log("result: "+data);
-			get_results(ops, values);
+			simplify_expression();
+			var simplified = parse_expression();
+			get_results(simplified[0], simplified[1]);
 		});
 	}
 	
@@ -229,6 +231,7 @@ function power(data, x, p, po, prevt) {
 				// pow is needed in factorial() to divide pow with the factorial
 				// x is needed in factorial() to draw the point to the canvas
 				// the last argument is left out, because here we don't yet know the previous term: though it should be plain x
+				save_result(x+"pow"+po, jQuery.trim(data));
 				factorial(po, po, data, x, po, prevt);
 			} else {
 				power(data, x, p-1, po, prevt);
@@ -250,6 +253,7 @@ function factorial(x, n, pow, xo, po, pt) {
 		}
 		// first term almost calculated
 		if (n == 1 && po == 3) {
+			save_result("fac"+po, jQuery.trim(data)); 
 			// divide pow with the result
 			// call power again to calculate with 5
 			$.get("calculate.php", {arg1: pow, op:"/", arg2: data}, function( data ) {
@@ -259,12 +263,13 @@ function factorial(x, n, pow, xo, po, pt) {
 				$.get("calculate.php", {arg1: xo, op:"-", arg2: data}, function( data ) {
 					if (jQuery.isNumeric(data) == false) {
 						throw new Error("p=3, substract had incorrect arguments");
-					} 
+					}
 					power(xo, xo, 5, 5, data); 
 				});
 			});
 			
 		} else if (n == 1 && po == 5) {	
+			save_result("fac"+po, jQuery.trim(data)); 
 			// divide pow with the result
 			// draw the point
 			// also need to add "data" to previous term
@@ -281,6 +286,7 @@ function factorial(x, n, pow, xo, po, pt) {
 					});
 			});
 		} else if (n == 1 && po == 7) {
+			save_result("fac"+po, jQuery.trim(data)); 
 			// divide pow with the result
 			// draw the point
 			// substract "data" from previous term

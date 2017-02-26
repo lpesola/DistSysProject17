@@ -3,6 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>A simple calculator: step 1</title>
+		<link rel="stylesheet" type="text/css" href="../style.css">
 		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 		<script src="parse.js"></script>
 		<script>
@@ -19,7 +20,10 @@
 	<body>
 
 
-	<aside style="background-color:grey;color:white;padding:10px;float:right;width:50%;">
+<?php 
+	include("../links");
+?>
+	<aside>
 <?php
 	session_start();
 	foreach($_SESSION["history"] as &$calc) {

@@ -3,6 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>A simple calculator...</title>
+		<link rel="stylesheet" type="text/css" href="../style.css">
 	</head>
 	<body>
 <?php 
@@ -42,6 +43,8 @@ if (!isset($_SESSION['history'])) {
 }
  
 array_push($_SESSION["history"], $calculation);
+
+include("../links");
 
 include("history.html");
 
