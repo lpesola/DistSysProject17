@@ -174,4 +174,3 @@ function draw_axes(ctx, maxh) {
 	}
 
 
-}
