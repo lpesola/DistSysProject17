@@ -27,9 +27,9 @@ if ($op == "sin") {
 
 } else {
 
-	if($arg1 == NULL || $arg1 == False)
+	if($arg1 === NULL || $arg1 === False)
 		exit("invalid or no argument1");
-	if($arg2 == NULL || $arg2 == False)
+	if($arg2 === NULL || $arg2 === False)
 		exit("invalid or no argument1");
 
 	switch ($op) {
